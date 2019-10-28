@@ -89,10 +89,8 @@ class HashTable:
 
         Fill this in.
         '''
-        
-        self.capacity *= 2
         self.storage.extend([None] * self.capacity)
-
+        self.capacity *= 2
 
 
 if __name__ == "__main__":
