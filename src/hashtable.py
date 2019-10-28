@@ -79,7 +79,7 @@ class HashTable:
         i = 0
         for item in self.storage:
             if item is not None:
-                if key == item:
+                if key == item.key:
                     self.storage[i] = None
             i += 1
         print("WARNING: Item with that key not found")
