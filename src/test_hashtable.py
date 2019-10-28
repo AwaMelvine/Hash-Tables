@@ -20,6 +20,7 @@ class TestHashTable(unittest.TestCase):
         ht.insert("key-9", "val-9")
 
         return_value = ht.retrieve("key-0")
+        # print(f"{return_value}################--------")
         self.assertTrue(return_value == "val-0")
         return_value = ht.retrieve("key-1")
         self.assertTrue(return_value == "val-1")

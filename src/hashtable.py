@@ -56,8 +56,17 @@ class HashTable:
             self.resize()
 
         new_item = LinkedPair(key, value)
-        self.storage[self.count] = new_item
-        self.count += 1
+
+        n = 0
+        for i in self.storage:
+            if i is None:
+                self.storage[self.count] = new_item
+                self.count += 1
+            else:
+                if i.key == key:
+                    self.storage[n] = new_item
+                    return
+            n += 1
 
     def remove(self, key):
         '''
@@ -67,7 +76,13 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        i = 0
+        for item in self.storage:
+            if item is not None:
+                if key == item:
+                    self.storage[i] = None
+            i += 1
+        print("WARNING: Item with that key not found")
 
     def retrieve(self, key):
         '''
@@ -78,8 +93,9 @@ class HashTable:
         Fill this in.
         '''
         for n in self.storage:
-            if key == n.key:
-                return n.value
+            if n is not None:
+                if key == n.key:
+                    return n.value
         return None
 
     def resize(self):
@@ -96,6 +112,7 @@ class HashTable:
 if __name__ == "__main__":
     ht = HashTable(2)
 
+    ht.insert("line_1", "Tiny hash table")
     ht.insert("line_1", "Tiny hash table")
     ht.insert("line_2", "Filled beyond capacity")
     ht.insert("line_3", "Linked list saves the day!")
