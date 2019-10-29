@@ -90,13 +90,25 @@ class HashTable:
 
         Fill this in.
         '''
-        i = 0
-        for item in self.storage:
-            if item is not None:
-                if key == item.key:
-                    self.storage[i] = None
-            i += 1
-        print("WARNING: Item with that key not found")
+        index = self._hash_mod(key)
+        # if there is nothing at our index, print our little error message and get out of there!
+        if not self.storage[index]:
+            print(f"WARNING: Item with key {key} not found")
+            return
+        current_node = self.storage[index]
+        prev_node = None
+        # if there is only one node at this index and it has the key we want we just need to delete it, make the value at this index None
+        if current_node.key == key and not current_node.next:
+            self.storage[index] = None
+        elif current_node.key == key:
+            self.storage[index] = self.storage[index].next
+        else:
+            while current_node:
+                if current_node.key == key:
+                    prev_node.next = current_node.next
+                    return
+                prev_node = current_node
+                current_node = current_node.next
 
     def retrieve(self, key):
         '''
@@ -119,8 +131,15 @@ class HashTable:
 
         Fill this in.
         '''
-        self.storage.extend([None] * self.capacity)
         self.capacity *= 2
+        old_storage = self.storage
+        self.storage = [None] * self.capacity
+        for node in old_storage:
+            if node:
+                current_node = node
+                while current_node:
+                    self.insert(current_node.key, current_node.value)
+                    current_node = current_node.next
 
 
 if __name__ == "__main__":
