@@ -62,11 +62,13 @@ class HashTable:
             if i is None:
                 self.storage[self.count] = new_item
                 self.count += 1
+                return
             else:
                 if i.key == key:
                     self.storage[n] = new_item
                     return
             n += 1
+        
 
     def remove(self, key):
         '''
@@ -112,7 +114,6 @@ class HashTable:
 if __name__ == "__main__":
     ht = HashTable(2)
 
-    ht.insert("line_1", "Tiny hash table")
     ht.insert("line_1", "Tiny hash table")
     ht.insert("line_2", "Filled beyond capacity")
     ht.insert("line_3", "Linked list saves the day!")
