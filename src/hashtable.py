@@ -37,7 +37,6 @@ class HashTable:
 
     def __init__(self, capacity):
         self.capacity = capacity  # Number of buckets in the hash table
-        self.count = 0
         self.storage = [None] * capacity
 
     def _hash(self, key):
@@ -71,34 +70,17 @@ class HashTable:
 
         Fill this in.
         '''
-        if self.count >= self.capacity:
+
+        if not None in self.storage:
             self.resize()
-
         index = self._hash_mod(key)
-        new_item = LinkedPair(key, value)
 
-        if self.storage[index] is not None:
-            current_head = self.storage[index]
-            current = self.storage[index].next
-            while current:
-                current = current.next
-            current = current_head
-            self.storage[index] = new_item
-            self.count += 1
+        # if we have something at the index, append this value. Using linkedpair.append will
+        # overwrite a value already existing, and traverse over all the values
+        if self.storage[index]:
+            self.storage[index].append(key, value)
         else:
-            self.storage[index] = new_item
-            self.count += 1
-
-        # n = 0
-        # for i in self.storage:
-        #     if i is None:
-        #         self.storage[self.count] = new_item
-        #         self.count += 1
-        #         return
-        #     elif i.key == key:
-        #         self.storage[n] = new_item
-        #         return
-        #     n += 1
+            self.storage[index] = LinkedPair(key, value)
 
     def remove(self, key):
         '''
@@ -124,11 +106,11 @@ class HashTable:
 
         Fill this in.
         '''
-        for n in self.storage:
-            if n is not None:
-                if key == n.key:
-                    return n.value
-        return None
+        index = self._hash_mod(key)
+        if self.storage[index]:
+            return self.storage[index].retrieve(key)
+        else:
+            print(f"Hash[{key}] is not found")
 
     def resize(self):
         '''
