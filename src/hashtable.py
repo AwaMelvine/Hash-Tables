@@ -55,20 +55,31 @@ class HashTable:
         if self.count >= self.capacity:
             self.resize()
 
+        index = self._hash_mod(key)
         new_item = LinkedPair(key, value)
 
-        n = 0
-        for i in self.storage:
-            if i is None:
-                self.storage[self.count] = new_item
-                self.count += 1
-                return
-            else:
-                if i.key == key:
-                    self.storage[n] = new_item
-                    return
-            n += 1
-        
+        if self.storage[index] is not None:
+            current_head = self.storage[index]
+            current = self.storage[index].next
+            while current:
+                current = current.next
+            current = current_head
+            self.storage[index] = new_item
+            self.count += 1
+        else:
+            self.storage[index] = new_item
+            self.count += 1
+
+        # n = 0
+        # for i in self.storage:
+        #     if i is None:
+        #         self.storage[self.count] = new_item
+        #         self.count += 1
+        #         return
+        #     elif i.key == key:
+        #         self.storage[n] = new_item
+        #         return
+        #     n += 1
 
     def remove(self, key):
         '''
