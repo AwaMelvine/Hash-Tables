@@ -9,6 +9,25 @@ class LinkedPair:
         self.value = value
         self.next = None
 
+    # append an item at the end of our linked pair chain. if the item exists overwrite it
+    def append(self, key, value):
+        if self.key == key:
+            self.value = value
+        elif not self.next:
+            self.next = LinkedPair(key, value)
+        else:
+            self.next.append(key, value)
+
+    # retrieve an item from our linked list chain
+    def retrieve(self, key):
+        if self.key == key:
+            return self.value
+        elif not self.next:
+            print(f"Hash[{key}] is undefined")
+            return None
+        else:
+            return self.next.retrieve(key)
+
 
 class HashTable:
     '''
@@ -18,7 +37,6 @@ class HashTable:
 
     def __init__(self, capacity):
         self.capacity = capacity  # Number of buckets in the hash table
-        self.count = 0
         self.storage = [None] * capacity
 
     def _hash(self, key):
@@ -52,23 +70,17 @@ class HashTable:
 
         Fill this in.
         '''
-        if self.count >= self.capacity:
+
+        if not None in self.storage:
             self.resize()
+        index = self._hash_mod(key)
 
-        new_item = LinkedPair(key, value)
-
-        n = 0
-        for i in self.storage:
-            if i is None:
-                self.storage[self.count] = new_item
-                self.count += 1
-                return
-            else:
-                if i.key == key:
-                    self.storage[n] = new_item
-                    return
-            n += 1
-        
+        # if we have something at the index, append this value. Using linkedpair.append will
+        # overwrite a value already existing, and traverse over all the values
+        if self.storage[index]:
+            self.storage[index].append(key, value)
+        else:
+            self.storage[index] = LinkedPair(key, value)
 
     def remove(self, key):
         '''
@@ -78,13 +90,25 @@ class HashTable:
 
         Fill this in.
         '''
-        i = 0
-        for item in self.storage:
-            if item is not None:
-                if key == item.key:
-                    self.storage[i] = None
-            i += 1
-        print("WARNING: Item with that key not found")
+        index = self._hash_mod(key)
+        # if there is nothing at our index, print our little error message and get out of there!
+        if not self.storage[index]:
+            print(f"WARNING: Item with key {key} not found")
+            return
+        current_node = self.storage[index]
+        prev_node = None
+        # if there is only one node at this index and it has the key we want we just need to delete it, make the value at this index None
+        if current_node.key == key and not current_node.next:
+            self.storage[index] = None
+        elif current_node.key == key:
+            self.storage[index] = self.storage[index].next
+        else:
+            while current_node:
+                if current_node.key == key:
+                    prev_node.next = current_node.next
+                    return
+                prev_node = current_node
+                current_node = current_node.next
 
     def retrieve(self, key):
         '''
@@ -94,11 +118,11 @@ class HashTable:
 
         Fill this in.
         '''
-        for n in self.storage:
-            if n is not None:
-                if key == n.key:
-                    return n.value
-        return None
+        index = self._hash_mod(key)
+        if self.storage[index]:
+            return self.storage[index].retrieve(key)
+        else:
+            print(f"Hash[{key}] is not found")
 
     def resize(self):
         '''
@@ -107,8 +131,15 @@ class HashTable:
 
         Fill this in.
         '''
-        self.storage.extend([None] * self.capacity)
         self.capacity *= 2
+        old_storage = self.storage
+        self.storage = [None] * self.capacity
+        for node in old_storage:
+            if node:
+                current_node = node
+                while current_node:
+                    self.insert(current_node.key, current_node.value)
+                    current_node = current_node.next
 
 
 if __name__ == "__main__":
